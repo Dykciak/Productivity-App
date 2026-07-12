@@ -1,0 +1,140 @@
+// Prisma schema for the Personal Productivity Dashboard
+// docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Task {
+  id          String   @id @default(cuid())
+  title       String
+  notes       String?
+  isUrgent    Boolean  @default(false)
+  isImportant Boolean  @default(false)
+  /// "TODAY" | "WEEK" | "SOMEDAY" — SQLite has no native enum support
+  timeframe   String   @default("TODAY")
+  completed   Boolean  @default(false)
+  completedAt DateTime?
+  isOneThing  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  timeBlock   TimeBlock?
+
+  @@index([timeframe])
+}
+
+model TimeBlock {
+  id            String   @id @default(cuid())
+  taskId        String   @unique
+  task          Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  date          DateTime @default(now())
+  startHour     Int
+  durationHours Int      @default(1)
+}
+
+model HabitDef {
+  id        String       @id @default(cuid())
+  name      String
+  icon      String       @default("Sparkles")
+  color     String       @default("primary")
+  createdAt DateTime     @default(now())
+  entries   HabitEntry[]
+}
+
+model HabitEntry {
+  id        String   @id @default(cuid())
+  habitId   String
+  habit     HabitDef @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  date      DateTime
+  completed Boolean  @default(true)
+
+  @@unique([habitId, date])
+}
+
+model Project {
+  id          String     @id @default(cuid())
+  title       String
+  description String?
+  targetDate  DateTime?
+  /// "general" | "learning" — separates Goals & Projects from the 12-Month Learning Plan
+  category    String     @default("general")
+  order       Int        @default(0)
+  createdAt   DateTime   @default(now())
+  subtasks    Subtask[]
+
+  @@index([category])
+}
+
+model Subtask {
+  id        String  @id @default(cuid())
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title     String
+  completed Boolean @default(false)
+  order     Int     @default(0)
+}
+
+model JournalEntry {
+  id            String   @id @default(cuid())
+  date          DateTime @unique
+  grateful      String
+  wentWell      String
+  couldImprove  String
+  rating        Int
+  createdAt     DateTime @default(now())
+}
+
+model InboxNote {
+  id        String   @id @default(cuid())
+  content   String
+  resolved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Transaction {
+  id       String   @id @default(cuid())
+  amount   Float
+  /// "INCOME" | "EXPENSE" — SQLite has no native enum support
+  type     String
+  category String
+  note     String?
+  date     DateTime @default(now())
+}
+
+model BudgetCategory {
+  id           String @id @default(cuid())
+  name         String
+  monthlyLimit Float
+  icon         String @default("Wallet")
+}
+
+model SavingsGoal {
+  id             String @id @default(cuid())
+  name           String
+  targetAmount   Float
+  currentAmount  Float  @default(0)
+  icon           String @default("PiggyBank")
+}
+
+model Book {
+  id        String   @id @default(cuid())
+  title     String
+  author    String
+  coverUrl  String?
+  /// "READ" | "WANT_TO_READ" | "READING" — SQLite has no native enum support
+  status    String   @default("WANT_TO_READ")
+  createdAt DateTime @default(now())
+
+  @@index([status])
+}
+
+model VisionImage {
+  id        String   @id @default(cuid())
+  url       String
+  caption   String?
+  createdAt DateTime @default(now())
+}
