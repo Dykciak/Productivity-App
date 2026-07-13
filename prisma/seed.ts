@@ -13,20 +13,26 @@ function today() {
   return daysAgo(0);
 }
 
+async function isDatabaseEmpty() {
+  const [taskCount, projectCount, bookCount, imageCount, noteCount, transactionCount] = await Promise.all([
+    prisma.task.count(),
+    prisma.project.count(),
+    prisma.book.count(),
+    prisma.visionImage.count(),
+    prisma.note.count(),
+    prisma.transaction.count(),
+  ]);
+  return taskCount + projectCount + bookCount + imageCount + noteCount + transactionCount === 0;
+}
+
 async function main() {
-  await prisma.timeBlock.deleteMany();
-  await prisma.task.deleteMany();
-  await prisma.habitEntry.deleteMany();
-  await prisma.habitDef.deleteMany();
-  await prisma.subtask.deleteMany();
-  await prisma.project.deleteMany();
-  await prisma.journalEntry.deleteMany();
-  await prisma.inboxNote.deleteMany();
-  await prisma.transaction.deleteMany();
-  await prisma.budgetCategory.deleteMany();
-  await prisma.savingsGoal.deleteMany();
-  await prisma.book.deleteMany();
-  await prisma.visionImage.deleteMany();
+  // This seed is a first-run bootstrap only. It never touches a database that already
+  // has real content — re-running it (e.g. after a schema migration) must be a safe no-op,
+  // not a way to accidentally wipe everything a user has entered.
+  if (!(await isDatabaseEmpty())) {
+    console.log("Database already has data — skipping seed to avoid overwriting it.");
+    return;
+  }
 
   const oneThing = await prisma.task.create({
     data: {
@@ -165,6 +171,16 @@ async function main() {
     prisma.budgetCategory.create({ data: { name: "Transport", monthlyLimit: 200, icon: "Car" } }),
     prisma.budgetCategory.create({ data: { name: "Dining Out", monthlyLimit: 250, icon: "UtensilsCrossed" } }),
   ]);
+
+  await prisma.incomeCategory.createMany({
+    data: [
+      { name: "Salary" },
+      { name: "Freelance" },
+      { name: "Investments" },
+      { name: "Gifts" },
+      { name: "Other" },
+    ],
+  });
 
   await prisma.transaction.create({
     data: { amount: 4800, type: "INCOME", category: "Salary", date: daysAgo(11) },
@@ -376,6 +392,26 @@ async function main() {
       { url: "https://picsum.photos/seed/vision-6/500/400", caption: "New bike" },
       { url: "https://picsum.photos/seed/vision-7/500/600", caption: "Reading nook" },
       { url: "https://picsum.photos/seed/vision-8/500/450" },
+    ],
+  });
+
+  await prisma.note.createMany({
+    data: [
+      {
+        title: "Client call prep",
+        content:
+          "<p><strong>Q3 proposal call — 4pm</strong></p><ul><li>Confirm <em>pricing tiers</em> before the call</li><li>Bring up the <u>timeline slip</u> from last sprint</li><li>Ask about renewal terms</li></ul>",
+      },
+      {
+        title: "Recipe: weeknight stir fry",
+        content:
+          "<p>Quick and easy, ready in <strong>20 minutes</strong>.</p><ol><li>Slice chicken thin, marinate in soy + garlic</li><li>Stir fry veg on <em>high heat</em></li><li>Add sauce, toss, serve over rice</li></ol>",
+      },
+      {
+        title: "Book ideas for next quarter",
+        content:
+          "<p>Half-formed thoughts, not committing to anything yet.</p><p>Maybe worth a <u>proper outline</u> before Q4.</p>",
+      },
     ],
   });
 

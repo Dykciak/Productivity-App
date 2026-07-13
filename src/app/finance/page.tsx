@@ -11,10 +11,11 @@ function startOfMonth(date: Date) {
 export default async function FinancePage() {
   const monthStart = startOfMonth(new Date());
 
-  const [transactions, allTransactions, budgetCategories, savingsGoals] = await Promise.all([
+  const [transactions, allTransactions, budgetCategories, incomeCategories, savingsGoals] = await Promise.all([
     prisma.transaction.findMany({ where: { date: { gte: monthStart } }, orderBy: { date: "desc" } }),
     prisma.transaction.findMany({ orderBy: { date: "desc" }, take: 300 }),
     prisma.budgetCategory.findMany(),
+    prisma.incomeCategory.findMany(),
     prisma.savingsGoal.findMany(),
   ]);
 
@@ -34,6 +35,7 @@ export default async function FinancePage() {
         transactions={transactions}
         allTransactions={allTransactions}
         budgetCategories={budgetCategories}
+        incomeCategories={incomeCategories}
         savingsGoals={savingsGoals}
       />
     </main>

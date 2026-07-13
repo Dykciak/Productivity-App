@@ -8,6 +8,7 @@ import {
   History,
   LayoutDashboard,
   Library,
+  NotebookText,
   Sparkles,
   Wallet,
 } from "lucide-react";
@@ -19,6 +20,7 @@ const NAV_ITEMS = [
   { href: "/learning-plan", label: "Learning", icon: GraduationCap },
   { href: "/books", label: "Books", icon: Library },
   { href: "/vision-board", label: "Vision", icon: GalleryHorizontalEnd },
+  { href: "/notes", label: "Notes", icon: NotebookText },
   { href: "/history", label: "History", icon: History },
 ];
 

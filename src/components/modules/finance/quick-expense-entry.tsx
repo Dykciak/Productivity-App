@@ -1,20 +1,38 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createTransaction } from "@/lib/actions/finance";
-import type { BudgetCategory, TransactionType } from "@/lib/types";
+import type { BudgetCategory, IncomeCategory, TransactionType } from "@/lib/types";
 
-export function QuickExpenseEntry({ budgetCategories }: { budgetCategories: BudgetCategory[] }) {
-  const categoryOptions = budgetCategories.length > 0 ? budgetCategories.map((c) => c.name) : ["Other"];
+export function QuickExpenseEntry({
+  budgetCategories,
+  incomeCategories,
+}: {
+  budgetCategories: BudgetCategory[];
+  incomeCategories: IncomeCategory[];
+}) {
+  const expenseOptions = budgetCategories.length > 0 ? budgetCategories.map((c) => c.name) : ["Other"];
+  const incomeOptions = incomeCategories.length > 0 ? incomeCategories.map((c) => c.name) : ["Other"];
+
   const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState(categoryOptions[0]);
-  const [note, setNote] = useState("");
   const [type, setType] = useState<TransactionType>("EXPENSE");
+  const [category, setCategory] = useState(expenseOptions[0]);
+  const [note, setNote] = useState("");
   const [isPending, startTransition] = useTransition();
+
+  const categoryOptions = type === "EXPENSE" ? expenseOptions : incomeOptions;
+
+  // Keep the selected category valid whenever the active list changes (type switch or list edited elsewhere).
+  useEffect(() => {
+    if (!categoryOptions.includes(category)) {
+      setCategory(categoryOptions[0]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type, categoryOptions.join("|")]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

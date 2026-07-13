@@ -58,6 +58,17 @@ export async function deleteBudgetCategory(id: string) {
   revalidateAll();
 }
 
+export async function createIncomeCategory(name: string) {
+  if (!name.trim()) return;
+  await prisma.incomeCategory.create({ data: { name: name.trim() } });
+  revalidateAll();
+}
+
+export async function deleteIncomeCategory(id: string) {
+  await prisma.incomeCategory.delete({ where: { id } });
+  revalidateAll();
+}
+
 export async function createSavingsGoal(name: string, targetAmount: number) {
   if (!name.trim() || targetAmount <= 0) return;
   await prisma.savingsGoal.create({ data: { name: name.trim(), targetAmount } });

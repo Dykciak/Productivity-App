@@ -112,6 +112,12 @@ model BudgetCategory {
   icon         String @default("Wallet")
 }
 
+model IncomeCategory {
+  id   String @id @default(cuid())
+  name String
+  icon String @default("TrendingUp")
+}
+
 model SavingsGoal {
   id             String @id @default(cuid())
   name           String
@@ -137,4 +143,13 @@ model VisionImage {
   url       String
   caption   String?
   createdAt DateTime @default(now())
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  title     String   @default("Untitled note")
+  /// Rich text stored as sanitized HTML from the Tiptap editor
+  content   String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

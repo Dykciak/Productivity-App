@@ -9,9 +9,11 @@ import type {
   InboxNote as PrismaInboxNote,
   Transaction as PrismaTransaction,
   BudgetCategory as PrismaBudgetCategory,
+  IncomeCategory as PrismaIncomeCategory,
   SavingsGoal as PrismaSavingsGoal,
   Book as PrismaBook,
   VisionImage as PrismaVisionImage,
+  Note as PrismaNote,
 } from "@prisma/client";
 
 export const TIMEFRAMES = ["TODAY", "WEEK", "SOMEDAY"] as const;
@@ -36,9 +38,11 @@ export type JournalEntry = PrismaJournalEntry;
 export type InboxNote = PrismaInboxNote;
 export type Transaction = PrismaTransaction;
 export type BudgetCategory = PrismaBudgetCategory;
+export type IncomeCategory = PrismaIncomeCategory;
 export type SavingsGoal = PrismaSavingsGoal;
 export type Book = PrismaBook;
 export type VisionImage = PrismaVisionImage;
+export type Note = PrismaNote;
 
 export type TaskWithTimeBlock = Task & { timeBlock: TimeBlock | null };
 export type ProjectWithSubtasks = Project & { subtasks: Subtask[] };

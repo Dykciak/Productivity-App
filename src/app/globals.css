@@ -83,3 +83,47 @@
     scrollbar-width: none;
   }
 }
+
+.tiptap {
+  outline: none;
+}
+.tiptap p {
+  margin: 0.5em 0;
+  line-height: 1.6;
+}
+.tiptap p:first-child {
+  margin-top: 0;
+}
+.tiptap ul,
+.tiptap ol {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+.tiptap ul {
+  list-style: disc;
+}
+.tiptap ol {
+  list-style: decimal;
+}
+.tiptap li {
+  margin: 0.25em 0;
+}
+.tiptap li p {
+  margin: 0;
+}
+.tiptap strong {
+  font-weight: 700;
+}
+.tiptap em {
+  font-style: italic;
+}
+.tiptap u {
+  text-decoration: underline;
+}
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  color: hsl(var(--muted-foreground));
+}
